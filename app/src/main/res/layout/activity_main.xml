@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
+    android:paddingLeft="10dp"
+    android:paddingTop="25dp"
+    android:paddingRight="10dp"
+    android:paddingBottom="25dp"
+    tools:context=".MainActivity">
+
+    <LinearLayout
+        android:id="@+id/dataLl"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:animateLayoutChanges="true"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.5"/>
+
+            <Spinner
+                android:id="@+id/urlSp"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:gravity="center"/>
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/urlTil"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:hint="URL"
+                app:errorEnabled="true">
+
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/urlTiet"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"/>
+            </android.support.design.widget.TextInputLayout>
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.5"/>
+        </LinearLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:hint="PostParams">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/postParamsEt"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:enabled="false"/>
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="ResCode">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/resCodeEt"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:enabled="false"/>
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="2"
+            android:hint="Response">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/responseEt"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:enabled="false"/>
+        </android.support.design.widget.TextInputLayout>
+
+        <Button
+            android:id="@+id/material_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onSendInfoClk"
+            android:text="Enviar"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/loadingLl"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:animateLayoutChanges="true"
+        android:orientation="vertical"
+        android:padding="10dp"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:id="@+id/loadingPb"
+            style="@style/ProgressBarThemeHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/progressbar_heightHi"
+            android:indeterminate="true"/>
+
+        <TextView
+            android:id="@+id/loadingTv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/util_checkInternet"
+            android:textSize="15sp"
+            android:textStyle="bold"/>
+    </LinearLayout>
+
+</android.support.design.widget.CoordinatorLayout>

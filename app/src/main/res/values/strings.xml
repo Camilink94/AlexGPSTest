@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">AlexGPS</string>
+    <string name="util_checkInternet">Confirmando conexión con servidor...</string>
+    <string name="util_serverConnTestUrl">http://www.google.com/</string>
+</resources>

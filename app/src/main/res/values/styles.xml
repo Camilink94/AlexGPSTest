@@ -1,0 +1,49 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.MaterialComponents">
+
+        <item name="colorPrimary">@color/primaryColor</item>
+        <item name="colorPrimaryDark">@color/primaryDarkColor</item>
+        <!--<item name="colorPrimaryLight">@color/primaryLightColor</item>-->
+        <item name="colorSecondary">@color/secondaryColor</item>
+        <!--<item name="colorSecondaryDark">@color/secondaryDarkColor</item>
+        <item name="colorSecondaryLight">@color/secondaryLightColor</item>-->
+        <item name="textInputStyle">@style/AppTheme.TextInputLayoutStyle</item>
+        <item name="editTextStyle">@style/AppTheme.TextInputEditTextStyle</item>
+
+        <item name="android:textViewStyle">@style/TextViewStyle</item>
+
+
+        <item name="coordinatorLayoutStyle">@style/CoordinatorLayoutStyle</item>
+    </style>
+
+    <style name="TextViewStyle">
+        <item name="android:textColor">@color/black</item>
+    </style>
+
+    <style name="AppTheme.TextInputLayoutStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textColorHint">@color/black</item>
+    </style>
+
+    <style name="AppTheme.TextInputEditTextStyle" parent="Widget.MaterialComponents.TextInputEditText.OutlinedBox">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textColorHint">@color/black</item>
+    </style>
+
+    <style name="CoordinatorLayoutStyle" parent="android:Widget">
+        <item name="statusBarBackground">@color/colorPrimaryDark</item>
+        <item name="android:background">@android:color/white</item>
+    </style>
+    <style name="ProgressBarThemeHorizontal" parent="Widget.AppCompat.ProgressBar.Horizontal">
+        <item name="android:indeterminateTint" tools:targetApi="lollipop">@color/secondaryColor</item>
+        <item name="android:indeterminateTintMode" tools:targetApi="lollipop">src_atop</item>
+    </style>
+
+    <style name="ProgressBarTheme" parent="Widget.AppCompat.ProgressBar">
+        <item name="android:indeterminateTint" tools:targetApi="lollipop">@color/secondaryColor</item>
+        <item name="android:indeterminateTintMode" tools:targetApi="lollipop">src_atop</item>
+    </style>
+
+</resources>

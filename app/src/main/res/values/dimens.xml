@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ProgressBar -->
+    <dimen name="progressbar_heightHi">40dp</dimen>
+    <dimen name="progressbar_heightMi">20dp</dimen>
+    <dimen name="progressbar_heightLo">10dp</dimen>
+</resources>
