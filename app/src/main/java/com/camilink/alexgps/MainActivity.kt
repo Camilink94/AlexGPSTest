@@ -3,6 +3,7 @@ package com.camilink.alexgps
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.pm.PackageManager
 import android.os.AsyncTask
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
@@ -12,23 +13,26 @@ import kotlinx.android.synthetic.main.activity_main.*
 import pub.devrel.easypermissions.AfterPermissionGranted
 import pub.devrel.easypermissions.EasyPermissions
 import android.location.LocationManager
+import android.support.v4.content.ContextCompat
 import android.util.Log
-import java.io.BufferedReader
-import java.io.IOException
-import java.io.InputStreamReader
-import java.io.PrintWriter
-import java.net.HttpURLConnection
-import java.net.URL
+import android.telephony.TelephonyManager
+import java.net.DatagramPacket
+import java.net.DatagramSocket
+import java.net.InetAddress
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 class MainActivity : AppCompatActivity() {
 
   companion object {
-    const val MY_PERMISSIONS_REQUEST_FINE_LOCATION = 1
+    const val MY_PERMISSIONS_REQUEST_FINE_LOCATION_AND_PHONE = 1
     const val TAG = "Acc"
   }
 
   var url: String = ""
+  var httpProt: String = ""
+  var port: Int = 0
   lateinit var mContext: MainActivity
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,7 +42,7 @@ class MainActivity : AppCompatActivity() {
 
     val httpArr = arrayOf("http://", "https://")
     val httAdapter = ArrayAdapter<String>(mContext, android.R.layout.simple_spinner_item, httpArr)
-    httAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+    httAdapter.setDropDownViewResource(android.R.layout.simple_spinner_item)
     urlSp.adapter = httAdapter
 
   }
@@ -47,23 +51,26 @@ class MainActivity : AppCompatActivity() {
     onSendInfoClk()
   }
 
-  @AfterPermissionGranted(MY_PERMISSIONS_REQUEST_FINE_LOCATION)
+  @AfterPermissionGranted(MY_PERMISSIONS_REQUEST_FINE_LOCATION_AND_PHONE)
   fun onSendInfoClk() {
-    val perms = arrayOf(Manifest.permission.CAMERA, Manifest.permission.ACCESS_FINE_LOCATION)
+    val perms = arrayOf(Manifest.permission.READ_PHONE_STATE, Manifest.permission.ACCESS_FINE_LOCATION)
+    Log.d(TAG, "Granted: " + (ContextCompat.checkSelfPermission(mContext, perms[0]) == PackageManager.PERMISSION_GRANTED))
     if (EasyPermissions.hasPermissions(this, *perms)) {
-      Log.d(TAG,"PermGranted... Sending")
+      Log.d(TAG, "PermGranted... Sending")
       sendInfo()
     } else {
-      Log.d(TAG,"PermDenied... Asking")
-      EasyPermissions.requestPermissions(this, "Debe dar permiso para ubicación",
-          MY_PERMISSIONS_REQUEST_FINE_LOCATION, *perms)
+      Log.d(TAG, "PermDenied... Asking")
+      EasyPermissions.requestPermissions(this, "Por favor añada los permisos",
+          MY_PERMISSIONS_REQUEST_FINE_LOCATION_AND_PHONE, *perms)
     }
   }
 
   @SuppressLint("StaticFieldLeak")
   fun sendInfo() {
     url = urlTiet.text.toString()
-    if (!url.equals("")) {
+    if (url != "") {
+      httpProt = urlSp.selectedItem.toString()
+      port = portTiet.text.toString().toInt()
 
       object : AsyncTask<Void, Int, Void?>() {
 
@@ -94,43 +101,72 @@ class MainActivity : AppCompatActivity() {
           thereIsInternet = AppUtils.checkInternet(mContext)
           if (thereIsInternet) {
             publishProgress(1)
+
+            var imei = ""
+            var phoneNumber = ""
+            val mTelephony = getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
+            if (mTelephony.deviceId != null) {
+              imei = mTelephony.deviceId
+              phoneNumber = mTelephony.line1Number ?: ""
+            }
+
+            var keyword = "001"
+
+            val timestamp1 = SimpleDateFormat("yyMMddhhmmss").format(Date())
+            val timestamp2 = ""
+
+            val gpsActive = "F"//"L" if not active
+            val gpsActive2 = if (gpsActive == "F") "A" else "V"
+
             val locationManager: LocationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
             val locationProvider = LocationManager.NETWORK_PROVIDER
             val lastKnownLocation = locationManager.getLastKnownLocation(locationProvider)
-            postParams = "lat=" + lastKnownLocation.latitude + "&long=" + lastKnownLocation.longitude
+
+            val latVal = Math.abs(lastKnownLocation?.latitude ?: 0.toDouble())
+            val latOri = if (latVal >= 0) "N" else "S"
+            val lonVal = Math.abs(lastKnownLocation?.longitude ?: 0.toDouble())
+            val lonOri = if (lonVal >= 0) "E" else "W"
+            val speed = lastKnownLocation?.speed ?: 0.toFloat()
+            val direction = "0"
+            val altitude = lastKnownLocation?.altitude ?: 0.toDouble()
+
+            val accState = ""
+            val doorState = ""
+            val oilState1 = ""
+            val oilState2 = ""
+            val tempState = ""
+
+            postParams = "imei:" + imei +
+                "," + keyword +
+                "," + timestamp1 +
+                "," + phoneNumber +
+                "," + gpsActive +
+                "," + timestamp2 +
+                "," + gpsActive2 +
+                "," + latVal +
+                "," + latOri +
+                "," + lonVal +
+                "," + lonOri +
+                "," + speed +
+                "," + direction +
+                "," + altitude +
+                "," + accState +
+                "," + doorState +
+                "," + oilState1 +
+                "," + oilState2 +
+                "," + tempState + ";"
+            Log.d(TAG, postParams)
+
             publishProgress(2)
 
-            try {
-              val urlToRequest = URL(url)
-              val urlConnection = urlToRequest.openConnection() as HttpURLConnection
-              urlConnection.setDoOutput(true)
-              urlConnection.setRequestMethod("POST")
-              //urlConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-              //urlConnection.setRequestProperty("Content-Type", "application/form-data");
-              //urlConnection.setRequestProperty("Content-Type", "application/json");
-              urlConnection.setConnectTimeout(30000)
-              urlConnection.setReadTimeout(30000)
-              urlConnection.setFixedLengthStreamingMode(
-                  postParams.toByteArray().size)
-              val out = PrintWriter(urlConnection.getOutputStream())
-              out.print(postParams)
-              out.close()
-              resCode = urlConnection.responseCode
-              val inp = BufferedReader(
-                  InputStreamReader(urlConnection.getInputStream()))
-              var inputLine: String
-              val response = StringBuilder()
-              inputLine = inp.readLine()
-              while (inputLine != null) {
-                response.append(inputLine)
-                inputLine = inp.readLine()
-              }
-              inp.close()
-              //print result
-              result = response.toString()
-            } catch (e: IOException) {
-              e.printStackTrace()
-            }
+            val s = DatagramSocket()
+            val local = InetAddress.getByName(
+                //httpProt +
+                    url)
+            val msg_length = postParams.length
+            val message = postParams.toByteArray()
+            val p = DatagramPacket(message, msg_length, local, port)
+            s.send(p)
 
           }
           return null
